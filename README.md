@@ -8,21 +8,26 @@
 
 * Node环境  
 
-``'javascript
-克隆
-git clone <https://github.com/rijianyunxi/autoSign.git>  ```  
-
-```
 ```javascript
 
-安装依赖
+#克隆
+
+git clone <https://github.com/rijianyunxi/autoSign-chaoxing.git>
+
+```
+
+```javascript
+
+#安装依赖
+
 npm install
 
 ```  
 
 ```javascript
 
-打开config.js,输入你的cookie
+#打开config.js,输入你的cookie
+
 let cookie = '你的cookie'```  
 
 ```
@@ -31,34 +36,49 @@ let cookie = '你的cookie'```
 
 ```javascript
 
-运行项目
+#运行项目
+
 node  app.js
 
 ```
 
-## 不会抓包
+* 安心睡觉，妈妈再也不用担心我学习通签到啦
+  
+## 不会抓包?
 
 ```
-打开getCookie.js,填写账号密码,复制终端上的内容到config.js的cookie中即可
+#打开getCookie.js,填写账号密码,复制终端上的内容到config.js的cookie中即可
+
 node  getCookie.js
-填完后运行项目
+
+#填完后运行项目
+
 node app.js
 
 ```
 
-## 定时任务
+## 定时任务？
 
 ```javascript
 
 //用的是node-schdule，根据自己课程进行定时
+
 //周一到周四早上8点到12点每5分钟执行一次 
+
 //参数含义（秒，分，时，日，月，周）
+
 let j = schedule.scheduleJob(`*/${config.speed} 8-12 * * 1-4`, () => {
+
     autoSign()
+
 });
+
 //周三到周五下午14点到18点没5分钟执行一次
+
 let j2 = schedule.scheduleJob(`*/${config.speed} 14-18 * * 3-5`, () => {
+
     autoSign()
+
 });
 
 ```
@@ -68,16 +88,27 @@ let j2 = schedule.scheduleJob(`*/${config.speed} 14-18 * * 3-5`, () => {
 ```javascript
 
 let cookie = '你的cookie必填'
+
 let config ={
+
     serve: '没有则不填，不能接受微信通知',  //serve酱服务 发送通知到微信 没有则不填 http://sc.ftqq.com/3.version
+
     cookie : cookie,//cokie
+
     UID : cookie=='' ? '' : /UID=(.*?);/.exec(cookie)[1], //uid 应该是userID
+
     fid : cookie=='' ? '' : /fid=(.*?);/.exec(cookie)[1], //fid 学校id
+
     //这里用到了代理 因为我把项目放到了服务器 发现运行的时候返回了403.。。。应该是有ip识别ip机制吧 只有一个请求被返回403 所以代理一下 本地运行则没事，接口就给嫖吧
+
     api:'http://api.xdaili.cn/xdaili-api//greatRecharge/getGreatIp?spiderId=a425b9cce46b4fcd9732fe5d6ecf2fa4&orderno=YZ20181046667n7qACJ&returnType=1&count=1',
+
     number : 90, //通过班级人数筛选掉不需要签到的课程 
+
     time : 10*60*1000, //当前时间的时间戳 - 发布时间的时间戳 < time  签到有效期 不需要修改,貌似这个参数根本没用 无视
+
     speed: 5 //签到速度 分钟 每5分执行一次 越大越好 根据老师设置的签到时间 保证有效期内能运行两次 比如·10分钟有效期则 speed必须小于10  
+    
 }
 
 ```
