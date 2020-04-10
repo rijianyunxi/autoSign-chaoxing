@@ -1,5 +1,6 @@
 const request = require('superagent')
 const schedule = require('node-schedule')
+const fs = require('fs')
 require('superagent-proxy')(request)
 const config = require('./config')
 
@@ -16,9 +17,10 @@ function getAllLessonList(ip) {
             //获取课程信息
             request.get('http://mooc1-api.chaoxing.com/mycourse').proxy(`http://${ip}`).set('Cookie', config.cookie).end((err, res) => {
                 if (err) {
-                    console.log(err);
                     reject('别问，问就是封号了。FROM：allLessonMessage');
-                    sendMsg('学习通错误信息', '获取课程列表失败，有可能cookie失效或不正确，来自阿里云签到');
+                    fs.appendFile('log.txt','获取课程列表失败\r\n',err=>{
+                        sendMsg('学习通错误信息', '获取课程列表失败，有可能cookie失效或不正确，来自阿里云签到');
+                    })
                 } else {
                     //console.log(JSON.parse(res.text).channelList);
                     //由于课程较多而且不能删除所以做了限制 减少损耗 提高性能 班级人数小于 config.number 人符合条件  filter 
@@ -30,7 +32,6 @@ function getAllLessonList(ip) {
                             name: r.content.course.data[0].name,
                             teacher: r.content.course.data[0].teacherfactor,
                             courseId: r.content.course.data[0].id,
-                            imageUrl: r.content.course.data[0].imageurl,
                             taskUrl: `https://mobilelearn.chaoxing.com/ppt/activeAPI/taskactivelist?courseId=${r.content.course.data[0].id}&classId=${r.content.id}&uid=${config.UID}`
                         }
                     })
@@ -71,8 +72,10 @@ function sign(taskListNeeded) {
             } else {
                 let result = /<span class="greenColor">(.*?)<\/span>/.exec(res.text)[1];
                 activeIdOver.push(taskListNeeded[0].id);//将成功签到的id放入数组，下次此id不再签
-                console.log(`${taskListNeeded[0].lesson} 发现签到活动，签到方式： ${taskListNeeded[0].nameOne} ,发布时间：${taskListNeeded[0].time}，自动签到结果：${result}`);
-                sendMsg('学习通签到通知', `${taskListNeeded[0].lesson} 发现签到活动，签到方式： ${taskListNeeded[0].nameOne} ,发布时间：${taskListNeeded[0].time}，自动签到结果：${result}`);
+                fs.appendFile('log.txt', `${taskListNeeded[0].lesson} 发现签到活动，签到方式： ${taskListNeeded[0].nameOne} ,发布时间：${taskListNeeded[0].time}，自动签到结果：${result}\r\n`, err => {
+                    console.log(`${taskListNeeded[0].lesson} 发现签到活动，签到方式： ${taskListNeeded[0].nameOne} ,发布时间：${taskListNeeded[0].time}，自动签到结果：${result}`);
+                    sendMsg('学习通签到通知', `${taskListNeeded[0].lesson} 发现签到活动，签到方式： ${taskListNeeded[0].nameOne} ,发布时间：${taskListNeeded[0].time}，自动签到结果：${result}`);
+                })
             }
         })
     } else {
@@ -96,7 +99,9 @@ function autoSign() {
     allLessonMessage.forEach(e => {
         request.get(e.taskUrl).set('Cookie', config.cookie).end((err, res) => {
             if (err) {
-                console.log('别问，问就是封了... FROM ：taskListNeeded');
+                fs.appendFile('log.txt',`访问${e.name}任务列表失败\r\n`,err=>{
+                    console.log(`访问${e.name}任务列表失败`)
+                })
             } else {
                 //如果没有err 则表示已经取到任务数据 为了保险起见 不应该只取第一个任务 防止发送多个任务 而没有取到签到任务 取任务列表前三条
                 //或者改变思路 筛选出列表中任务时间戳与当前时间戳相差小于 10*60*1000的 这样就拿到了10分钟之内发布的任务 如果为空则没有任务
@@ -113,7 +118,9 @@ function autoSign() {
                 if (taskListNeeded.length > 0) {
                     sign(taskListNeeded);
                 } else {
-                    console.log(`时间：${new Date().toLocaleString()} ， ${e.name + '-' + e.teacher} 没有签到任务`)
+                    fs.appendFile('log.txt', `时间：${new Date().toLocaleString()} ， ${e.name + '-' + e.teacher} 没有签到任务\r\n`, err => {
+                        console.log(`时间：${new Date().toLocaleString()} ， ${e.name + '-' + e.teacher} 没有签到任务`)
+                    })
                 }
             }
         })
