@@ -1,6 +1,6 @@
-let cookie = '';
+let cookie = '你的cookie'
 let config ={
-    serve: 'serve酱密钥',  //serve酱服务 发送通知到微信 没有则不填 http://sc.ftqq.com/3.version
+    serve: 'serve酱',  //serve酱服务 发送通知到微信 没有则不填 http://sc.ftqq.com/3.version
     cookie : cookie,//cokie 不用动
     UID : cookie=='' ? '' : /UID=(.*?);/.exec(cookie)[1], //uid 应该是userID 不用动
     fid : cookie=='' ? '' : /fid=(.*?);/.exec(cookie)[1], //fid 学校id  不用动

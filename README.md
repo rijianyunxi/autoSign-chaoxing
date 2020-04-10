@@ -1,5 +1,9 @@
 # 学习通自动签到Node.js
 
+
+* 2020-4.10 将执行内容写入log.txt
+
+
 ## 前言
 
 昨天无意间看到一篇博客关于超星学习通自动签到的，是用python写的，[博客地址]('https://blog.csdn.net/weixin_43560272/article/details/104832461')，毕竟没有学过python，一脸蒙蔽，但是node学过一丢，于是照着他的思路，用nodeJs写了一下，代码写的有些乱，不过总是一丢丢成长的，特此记录，**纯属学习**。
@@ -47,11 +51,11 @@ node  app.js
 ## 不会抓包?
 
 ```
-#打开getCookie.js,填写账号密码,复制终端上的内容到config.js的cookie中即可
+#打开getCookie.js,填写账号密码
 
-node  getCookie.js
+node getCookie.js
 
-#填完后运行项目
+#复制终端上的cookie到config.js的cookie中即可填完后运行项目
 
 node app.js
 
